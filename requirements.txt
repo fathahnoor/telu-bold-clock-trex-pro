@@ -1,0 +1,6 @@
+Pillow==12.3.0
+svglib==2.2.0
+reportlab==5.0.0
+rlPyCairo==0.4.0
+pycairo==1.29.1
+freetype-py==2.5.1

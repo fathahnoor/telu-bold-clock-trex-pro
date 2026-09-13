@@ -1,0 +1,18 @@
+{
+  "tests": 27,
+  "result": "PASS",
+  "date_combinations": 2604,
+  "bin_sha256": "22de5a4a6e89c76b6074eeeaf696a052461269024fb78b318c682d405cf2d083",
+  "unchanged_baseline_codecs": {
+    "tools/trexpro_wf.py": "db5ac32bb1c56b15e701fb0385e738a849a9ac06d75437ce9bb8ab44fca9a587",
+    "tools/pack_watchface.py": "8f5b897e9f8f44120b58aa8c3098f63291224f7f9f6b00e3db1aa80cb9a364e9"
+  },
+  "user_source_sha256": {
+    "TELU_WATCHFACE_V6_DESIGN_SPEC.md": "a932086ca002f579755710556bdaf17972328df5099cf42cc29daeddd4dd1061",
+    "V6-REF.png": "a276126375613c2bc9cebcb0d410e2de1781bbc10fb9c26822dbd71dc25678e2"
+  },
+  "preview_html_links": "PASS",
+  "preview_js_syntax": "PASS",
+  "normal_idle_identical": true,
+  "physical_device": "pending"
+}

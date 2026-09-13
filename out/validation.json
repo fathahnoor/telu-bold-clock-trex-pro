@@ -1,0 +1,25 @@
+{
+  "file": "telu_trex_pro.bin",
+  "sha256": "22de5a4a6e89c76b6074eeeaf696a052461269024fb78b318c682d405cf2d083",
+  "bytes": 428054,
+  "format": "UIHH v2 compressed",
+  "images": 130,
+  "params_equal": true,
+  "max_pixel_delta": 0,
+  "container_checks": {
+    "device_id": 83,
+    "quicklz_blocks": 505,
+    "decoded_block_bytes": 4096,
+    "raw_tail_bytes": 2368,
+    "format_marker": 1
+  },
+  "image_reference_checks": {
+    "image_id_base": 1,
+    "background_id": 1,
+    "preview_id": 130
+  },
+  "device_test": "V6 Performance pending physical installation",
+  "baseline_commit": "c7a48cc81ba5a4607fd49bd92c742447765be021",
+  "solar_transition": "legacy closest-event mapping retained; firmware timing unverified",
+  "aod_power_consumption": "not measured"
+}

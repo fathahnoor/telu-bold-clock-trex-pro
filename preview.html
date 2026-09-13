@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TEL-U Performance V6</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#09090b;color:#f5f5f5}
+body{max-width:1000px;margin:24px auto;padding:0 16px}h1{font-size:24px;margin-bottom:8px}
+p{color:#b8b8bb;line-height:1.5}a{color:#ff6970}label{display:block;margin:16px 0 6px}
+select,button{font:inherit;padding:10px;border:1px solid #55565b;border-radius:6px;background:#18181b;color:white}
+button{cursor:pointer;margin-left:8px}button:focus-visible,select:focus-visible{outline:2px solid #ed1e28}
+figure{margin:20px 0}img{display:block;width:360px;max-width:100%;height:auto;background:black}
+figcaption{margin-top:12px;color:#959597}.wide img{width:720px}
+</style>
+<h1>TEL-U Performance V6</h1>
+<p>Preview dari BIN hasil build untuk Amazfit T-Rex Pro. Uji perangkat fisik masih pending.</p>
+<label for="scenario">Skenario</label>
+<select id="scenario">
+<option value="out/preview.png">Siang 10:28, 8.426 steps, 82%</option>
+<option value="out/preview_sunrise.png">Sebelum sunrise 05:20</option>
+<option value="out/preview_after_sunset.png">Sesudah sunset 20:30</option>
+<option value="out/preview_max.png">Data maksimum 23:59</option>
+<option value="out/preview_zero.png">Data minimum 01:01</option>
+<option value="out/preview_idle.png">Always-on 10:28</option>
+<option value="out/preview_negative.png">Suhu -5 derajat</option>
+<option value="out/time-stress.png">Sembilan waktu uji</option>
+<option value="V6-REF.png">Referensi visual pengguna</option>
+</select>
+<button id="zoom" type="button" aria-pressed="false">Perbesar 2x</button>
+<figure id="figure"><img id="dial" src="out/preview.png" alt="Watchface V6, siang 10:28"><figcaption id="caption">Siang 10:28, 8.426 steps, 82%</figcaption></figure>
+<p>Skenario solar dipilih untuk memeriksa layout. Perilaku transisi otomatis tetap mengikuti firmware dan belum dibuktikan oleh preview ini.</p>
+<p><a href="out/telu_university_v6.bin" download>Unduh BIN V6</a> | <a href="out/validation.json">Laporan binary</a> | <a href="docs/device-test.md">Checklist perangkat</a></p>
+<script>
+const select=document.querySelector('#scenario');
+select.addEventListener('change',()=>{
+ const label=select.selectedOptions[0].text;
+ document.querySelector('#dial').src=select.value;
+ document.querySelector('#dial').alt=label;
+ document.querySelector('#caption').textContent=label;
+});
+document.querySelector('#zoom').addEventListener('click',event=>{
+ const wide=document.querySelector('#figure').classList.toggle('wide');
+ event.currentTarget.setAttribute('aria-pressed',String(wide));
+ event.currentTarget.textContent=wide?'Ukuran 360 px':'Perbesar 2x';
+});
+</script>
+</html>
