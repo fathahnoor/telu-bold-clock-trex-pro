@@ -8,6 +8,7 @@ Implementasi dan validasi software selesai. BIN: `out/telu_university_v6.bin`, 4
 Sumber visual: `V6-REF.png` dan `TELU_WATCHFACE_V6_DESIGN_SPEC.md` di root.
 Sumber teknis beserta commit ada di `findings.md`. Repository lama tidak diubah.
 Repo tujuan: https://github.com/fathahnoor/telu-bold-clock-trex-pro.
+Branch `main` sudah di-push. Snapshot pemeriksaan file remote ada di `out/remote-verification.json`.
 Pengguna sudah mengizinkan build, commit, pembuatan repo, dan push.
 Physical device test pending. Solar memakai mekanisme closest-event firmware baseline; tiga transisi target belum dibuktikan. Konsumsi AOD dan pemetaan cuaca juga belum diukur di perangkat.
 Detail tahapan ada di `task_plan.md`, checklist fisik di `docs/device-test.md`.

@@ -1,0 +1,26 @@
+{
+  "verified_commit": "81614d3eb061b94a9eee09e24931c6ff936e46c3",
+  "repository": "fathahnoor/telu-bold-clock-trex-pro",
+  "files": {
+    "out/telu_university_v6.bin": {
+      "bytes": 428054,
+      "sha256": "22de5a4a6e89c76b6074eeeaf696a052461269024fb78b318c682d405cf2d083",
+      "identical": true
+    },
+    "out/telu_trex_pro.bin": {
+      "bytes": 428054,
+      "sha256": "22de5a4a6e89c76b6074eeeaf696a052461269024fb78b318c682d405cf2d083",
+      "identical": true
+    },
+    "out/preview.png": {
+      "bytes": 66524,
+      "sha256": "ea7fb28de465fcf4b9edf3d92fa1f02c812092aebdda5b5932ea21638ea008d4",
+      "identical": true
+    },
+    "out/preview_idle.png": {
+      "bytes": 66524,
+      "sha256": "ea7fb28de465fcf4b9edf3d92fa1f02c812092aebdda5b5932ea21638ea008d4",
+      "identical": true
+    }
+  }
+}
