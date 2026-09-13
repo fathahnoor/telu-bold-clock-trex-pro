@@ -1,4 +1,4 @@
-"""Regression checks v5 TELKOM UNIVERSITY (container, params, sprite, warna)."""
+"""Regression checks V6 TELKOM UNIVERSITY (container, params, sprite, warna)."""
 import json
 import math
 import struct
@@ -8,9 +8,9 @@ from pathlib import Path
 
 from PIL import Image
 
-from gen_telu import make_digit, F_INTER, TIME_CELL, svg_icon, HEART
+from gen_telu import make_digit, F_INTER, TIME_CELL, svg_icon, HEART, METRICS, MINUTE_GRAY
 from check_layout import layout_errors
-from render_mockup import load, draw_number, draw_date, draw_gauge
+from render_mockup import load, draw_number, draw_date, draw_gauge, draw_time
 from check_round import number_box
 from trexpro_wf import (validate_trexpro_container, unpack, ids_to_names,
                         decode_image, encode_image)
@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BIN = ROOT / 'out/telu_trex_pro.bin'
 
 
-class WatchfaceV5Tests(unittest.TestCase):
+class WatchfaceV6Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.params, cls.images, _ = unpack(BIN.read_bytes())
@@ -51,7 +51,7 @@ class WatchfaceV5Tests(unittest.TestCase):
                          Image.open(ROOT / 'build/telu/preview.png')
                          .convert('RGBA').tobytes())
 
-    def test_hour_and_minute_digit_sets_are_white(self):
+    def test_hour_white_and_minute_light_gray(self):
         hms = self.named['Time']['Digital']['HoursMinutesSeconds']
         for entry in hms:
             rng = entry['Text']['Image']['ImageRange']['ImageRange']
@@ -62,7 +62,7 @@ class WatchfaceV5Tests(unittest.TestCase):
                 opaque = [tuple(px[p:p + 3]) for p in range(0, len(px), 4)
                           if px[p + 3] > 200]
                 self.assertGreater(len(opaque), 40, i)
-                self.assertTrue(all(rgb == (255, 255, 255) for rgb in opaque),
+                self.assertTrue(all(rgb == ((255, 255, 255) if entry["Type"] == 0 else MINUTE_GRAY) for rgb in opaque),
                                 (entry['Type'], i))
 
     def test_today_month_and_weekday_ranges(self):
@@ -123,13 +123,13 @@ class WatchfaceV5Tests(unittest.TestCase):
                 self.assertEqual(idle.convert('RGBA').tobytes(),
                                  normal.convert('RGBA').tobytes())
 
-    def test_all_gauges_present(self):
+    def test_all_metrics_present_without_gauges(self):
         types = [e['Type'] for e in self.named['System']['Data']]
         for t in ('Battery', 'Steps', 'Calories', 'HeartRate'):
             self.assertIn(t, types)
             entry = [e for e in self.named['System']['Data']
                      if e['Type'] == t][0]
-            self.assertIn('CircleScale', entry)
+            self.assertNotIn('CircleScale', entry)
 
     def test_image_round_trip_keeps_rgb_order(self):
         img = Image.new('RGBA', (2, 1))
@@ -149,63 +149,44 @@ class WatchfaceV5Tests(unittest.TestCase):
                 self.assertGreaterEqual(bbox[1], 0, (digit, bbox))
                 self.assertLessEqual(bbox[3], cell_h, (digit, bbox))
 
-    def test_metric_values_fit_inside_rings(self):
-        folder = ROOT / 'build/telu'
-        params = json.loads((folder / 'watchface.json').read_text())
-        rings = {'Steps': 47, 'HeartRate': 43, 'Calories': 44, 'Battery': 43}
-        for data in params['System']['Data']:
-            name = data['Type']
-            if name not in rings:
+    def test_metric_values_fit_inside_panels(self):
+        folder = ROOT / 'build/verified_bin'
+        params, _ = load(folder)
+        bounds = {'Steps': (28,140,96,164), 'HeartRate': (58,189,97,215),
+                  'Calories': (50,240,95,264), 'Battery': (278,140,337,165)}
+        for entry in params['System']['Data']:
+            if entry['Type'] not in bounds:
                 continue
-            txt = data['NumberSequence']['Text']
-            rng = txt['Image']['ImageRange']['ImageRange']
-            nd = {'Steps': 5, 'HeartRate': 3, 'Calories': 4, 'Battery': 3}[name]
-            delim = txt['Image'].get('DelimiterImageIndex')
-            suf = None
-            if 'SuffixImage' in txt['Image']:
-                suf = txt['Image']['SuffixImage']['ImageRange']['ImageIndex']
-            x, y, w, h = number_box(folder, txt, nd, suf, delim)
-            cx = data['CircleScale']['Angle']['X']
-            self.assertLessEqual(abs(x + w / 2 - cx), rings[name], name)
-            self.assertLessEqual(w / 2, rings[name], name)
+            txt = entry['NumberSequence']['Text']
+            n = {'Steps':5,'HeartRate':3,'Calories':4,'Battery':3}[entry['Type']]
+            suffix = txt['Image'].get('SuffixImage', {}).get('ImageRange', {}).get('ImageIndex')
+            box = number_box(folder, txt, n, suffix, txt['Image'].get('DelimiterImageIndex'))
+            x,y,w,h = box
+            l,t,r,b = bounds[entry['Type']]
+            self.assertTrue(l <= x and t <= y and x+w <= r and y+h <= b, (entry['Type'],box))
 
     def test_dynamic_variants_do_not_overlap(self):
         self.assertEqual(layout_errors(ROOT / 'build/verified_bin'), [])
 
-    def test_gauges_close_at_maximum_and_clamp_overflow(self):
+    def test_stacked_time_positions_are_fixed(self):
         params, images = load(ROOT / 'build/verified_bin')
-        for entry in params['System']['Data']:
-            if 'CircleScale' not in entry:
-                continue
-            gauge = entry['CircleScale']
-            angle = gauge['Angle']
-            self.assertEqual(angle['EndAngle'] - angle['StartAngle'], 360)
-            full = Image.new('RGBA', (360, 360))
-            draw_gauge(full, images, entry, 1)
-            radius = angle['Radius'] - gauge['Width'] / 2
-            for degree in range(360):
-                rad = math.radians(degree)
-                point = (round(angle['X'] + radius * math.cos(rad)),
-                         round(angle['Y'] + radius * math.sin(rad)))
-                self.assertGreater(full.getpixel(point)[3], 200,
-                                   (entry['Type'], degree))
-            overflow = Image.new('RGBA', (360, 360))
-            draw_gauge(overflow, images, entry, 2)
-            self.assertEqual(overflow.tobytes(), full.tobytes())
-            empty = Image.new('RGBA', (360, 360))
-            draw_gauge(empty, images, entry, 0)
-            self.assertIsNone(empty.getbbox())
-            half = Image.new('RGBA', (360, 360))
-            draw_gauge(half, images, entry, 0.5)
-            self.assertGreater(half.getpixel((round(angle['X'] + radius), angle['Y']))[3], 200)
-            self.assertEqual(half.getpixel((round(angle['X'] - radius), angle['Y']))[3], 0)
+        entries = params['Time']['Digital']['HoursMinutesSeconds']
+        coords = [(e['Text']['Image']['X'],e['Text']['Image']['Y']) for e in entries]
+        self.assertEqual(coords, [(117,103),(117,194)])
+        for pair in ('00','01','08','10','11','18','20','23','28','44','48','58','59'):
+            for entry in entries:
+                canvas = Image.new('RGBA',(360,360))
+                draw_number(canvas,images,entry['Text'],pair)
+                bbox = canvas.getbbox()
+                self.assertLessEqual(abs((bbox[0]+bbox[2])/2-179),0.5,(pair,bbox))
+                self.assertEqual(bbox[3]-bbox[1],88)
 
     def test_metric_groups_stay_centered_for_every_digit_length(self):
         params, images = load(ROOT / 'build/verified_bin')
-        cases = {'Steps': (5, [0, 1, 7, 12, 99, 100, 999, 1000, 9999, 99999]),
-                 'HeartRate': (3, [0, 7, 72, 199]),
-                 'Calories': (4, [0, 7, 35, 560, 9999]),
-                 'Battery': (3, [0, 1, 7, 82, 100])}
+        cases = {'Steps': (5, [0, 7, 99, 999, 8426, 9999, 10000, 99999]),
+                 'HeartRate': (3, [0, 72, 99, 120, 220]),
+                 'Calories': (4, [0, 9, 99, 560, 999, 1000, 9999]),
+                 'Battery': (3, [0, 1, 9, 82, 99, 100])}
         for entry in params['System']['Data']:
             if entry['Type'] not in cases:
                 continue
@@ -217,10 +198,10 @@ class WatchfaceV5Tests(unittest.TestCase):
                 draw_number(canvas, images, txt, value, max_digits=maximum)
                 box = canvas.getbbox()
                 self.assertLessEqual(abs((box[0] + box[2]) / 2 -
-                                         entry['CircleScale']['Angle']['X']), 0.5,
+                                         METRICS[{'Steps':'steps','HeartRate':'bpm','Calories':'kcal','Battery':'power'}[entry['Type']]]['cx']), 0.5,
                                      (entry['Type'], value, box))
 
-    def test_all_date_combinations_stay_centered(self):
+    def test_all_date_combinations_fit_two_line_date(self):
         params, images = load(ROOT / 'build/verified_bin')
         for weekday in range(7):
             for day in range(1, 32):
@@ -229,8 +210,8 @@ class WatchfaceV5Tests(unittest.TestCase):
                     draw_date(canvas, images, params['System']['Date'],
                               dict(wday=weekday, day=day, month=month))
                     box = canvas.getbbox()
-                    self.assertLessEqual(abs((box[0] + box[2]) / 2 - 180), 0.5,
-                                         (weekday, day, month, box))
+                    self.assertTrue(259 <= box[0] < box[2] <= 306 and 76 <= box[1] < box[3] <= 109,
+                                    (weekday,day,month,box))
 
     def test_colored_svg_keeps_transparent_corners(self):
         icon = svg_icon(ROOT / 'assets/heart.svg', 30, fill=HEART)
@@ -240,7 +221,7 @@ class WatchfaceV5Tests(unittest.TestCase):
     def test_layout_checker_rejects_time_metric_collision(self):
         params, images = load(ROOT / 'build/verified_bin')
         heart = next(e for e in params['System']['Data'] if e['Type'] == 'HeartRate')
-        heart['NumberSequence']['Text']['Image'].update(X=200, Y=150)
+        heart['NumberSequence']['Text']['Image'].update(X=180, Y=220)
         with patch('check_layout.load', return_value=(params, images)):
             errors = layout_errors('unused')
         self.assertTrue(any('time-1 overlaps HeartRate' in e for e in errors), errors)

@@ -54,25 +54,28 @@ def number_start(text_cfg, cell_width, actual_width, max_digits):
 
 
 def draw_number(canvas, imgs, text_cfg, digits, value=None, max_digits=None):
-    digits = str(digits)
     node = text_cfg["Image"]
     x, y = node["X"], node["Y"]
     rng = node["ImageRange"]["ImageRange"]
     base = rng["ImageIndex"]
-    if value is not None and text_cfg.get("NoDataImageIndex") is not None:
-        canvas.alpha_composite(imgs[text_cfg["NoDataImageIndex"]], (x, y))
+    if digits is None:
+        canvas.alpha_composite(imgs[node["NoDataImageIndex"]], (x, y))
         return
+    digits = str(digits)
     if text_cfg.get("ZeroPadding") and len(digits) < 2:
         digits = digits.rjust(2, "0")
     delim = node.get("DelimiterImageIndex")
-    if delim is not None and len(digits) > 3:
+    negative = digits.startswith("-")
+    if delim is not None and len(digits) > 3 and not negative:
         digits = digits[:-3] + "," + digits[-3:]
     cells = []
     for ch in digits:
         if ch == ",":
             cell = imgs[delim]
         elif ch == "-":
-            continue
+            if delim is None:
+                raise ValueError("Negative value requires a delimiter sprite")
+            cell = imgs[delim]
         else:
             cell = imgs[base + int(ch)]
         cells.append(cell)
@@ -124,7 +127,7 @@ def draw_time(canvas, imgs, block, args, date_shift=(0, 0)):
         node = txt["Image"]
         node = dict(node, X=node["X"] + sx, Y=node["Y"] + sy)
         draw_number(canvas, imgs, dict(txt, Image=node), digits)
-    if "AM" in block:
+    if "AM" in block and args.get("ampm") != "none":
         ap = block["AM" if args.get("ampm", "AM") == "AM" else "PM"]
         rng = ap["ImageRange"]["ImageRange"]
         badge = imgs[rng["ImageIndex"]]
@@ -217,7 +220,7 @@ def main(argv):
     args = {"time": "1028", "steps": "8426", "hr": "72", "batt": "82",
             "kcal": "560", "temp": "29", "cond": "2", "solar": "sunset",
             "wday": "4", "day": "12", "month": "9", "ampm": "AM",
-            "solartime": "1802", "sunrisetime": "0547", "mode": "main"}
+            "solartime": "1802", "sunrisetime": "0546", "mode": "main"}
     small = None
     i = 3
     while i < len(argv):

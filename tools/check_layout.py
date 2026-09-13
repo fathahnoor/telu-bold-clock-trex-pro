@@ -35,7 +35,7 @@ def layout_errors(folder):
             result = stamp(result, index + i, x, y)
         return result
 
-    def number(txt, maximum, solar=False):
+    def number(txt, maximum, solar=False, signed=False):
         node = txt["Image"]
         rng = node["ImageRange"]["ImageRange"]
         base, count = rng["ImageIndex"], rng["ImagesCount"]
@@ -66,6 +66,17 @@ def layout_errors(folder):
                 result = stamp(result, node["SuffixImage"]["ImageRange"]["ImageIndex"], x, y)
         if "NoDataImageIndex" in node:
             result = stamp(result, node["NoDataImageIndex"], node["X"], node["Y"])
+        if signed and "DelimiterImageIndex" in node:
+            # Weather uses this field for a leading minus, not thousands.
+            x, y = node["X"], node["Y"]
+            minus = node["DelimiterImageIndex"]
+            result = stamp(result, minus, x, y)
+            x += images[minus].width
+            for digit in range(maximum):
+                result = ImageChops.lighter(result, range_mask(base, count, x, y))
+                x += images[base].width
+                if "SuffixImage" in node:
+                    result = stamp(result, node["SuffixImage"]["ImageRange"]["ImageIndex"], x, y)
         return result
 
     for mode in ("main", "idle"):
@@ -104,7 +115,7 @@ def layout_errors(folder):
             typ = entry["Type"]
             if "NumberSequence" in entry:
                 layers[typ] = number(entry["NumberSequence"]["Text"], MAX_DIGITS[typ],
-                                     solar=typ == "Sunrise")
+                                     solar=typ == "Sunrise", signed=typ == "Weather")
                 if "CircleScale" in entry:
                     gauge = entry["CircleScale"]
                     a = gauge["Angle"]

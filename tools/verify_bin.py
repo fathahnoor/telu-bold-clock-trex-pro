@@ -84,6 +84,8 @@ report = {"file": BIN.name, "sha256": hashlib.sha256(raw).hexdigest(),
           "bytes": len(raw), "format": "UIHH v2 compressed", "images": len(images),
           "params_equal": True, "max_pixel_delta": maxd,
           "container_checks": container_checks, "image_reference_checks": image_checks,
-          "device_test": "v5 TELKOM UNIVERSITY menunggu uji perangkat",
-          "previous_device_result": "Compat v4 aktif dan berjalan di T-Rex Pro (laporan pengguna, 12 September 2026)"}
+          "device_test": "V6 Performance pending physical installation",
+          "baseline_commit": "c7a48cc81ba5a4607fd49bd92c742447765be021",
+          "solar_transition": "legacy closest-event mapping retained; firmware timing unverified",
+          "aod_power_consumption": "not measured"}
 (REPO / "out" / "validation.json").write_text(json.dumps(report, indent=2))

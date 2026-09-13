@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Satu perintah build penuh v5: aset -> mockup -> pack -> verifikasi.
+"""Satu perintah build penuh V6: aset -> mockup -> pack -> verifikasi.
 
 Pakai dari root repo:
   python tools/build_all.py
@@ -33,25 +33,23 @@ def main():
     run("tools/check_layout.py", "build/verified_bin")
     # Preview dari bin yang sudah diverifikasi (round-trip).
     run("tools/render_mockup.py", "build/verified_bin", "out/preview.png")
-    run("tools/render_mockup.py", "build/verified_bin", "out/preview_max.png",
-        "--time", "1259", "--steps", "99999", "--kcal", "9999",
-        "--hr", "220", "--batt", "100", "--day", "31", "--wday", "0",
-        "--month", "12", "--ampm", "PM", "--temp", "35", "--cond", "0")
-    run("tools/render_mockup.py", "build/verified_bin", "out/preview_zero.png",
-        "--time", "0007", "--steps", "0", "--kcal", "0", "--hr", "0",
-        "--batt", "0", "--day", "1", "--wday", "2", "--month", "1",
-        "--temp", "0", "--cond", "12")
-    run("tools/render_mockup.py", "build/verified_bin", "out/preview_idle.png",
-        "--mode", "idle")
-    run("tools/render_mockup.py", "build/verified_bin", "out/preview_sunrise.png",
-        "--solar", "sunrise", "--solartime", "0547", "--time", "0510",
-        "--batt", "94", "--steps", "220", "--kcal", "35", "--hr", "64",
-        "--temp", "21", "--cond", "0", "--wday", "4", "--day", "12")
-    # Alias dengan nama produk baru.
-    shutil.copyfile(ROOT / "out/telu_trex_pro.bin",
-                    ROOT / "out/telu_university_v5.bin")
-    run("tools/refresh_gallery.py")
-    print("BUILD OK -> out/telu_trex_pro.bin (alias: out/telu_university_v5.bin)")
+    scenarios = {
+        "max": ["--time", "2359", "--steps", "10000", "--kcal", "1000", "--hr", "220", "--batt", "100", "--ampm", "none"],
+        "zero": ["--time", "0101", "--steps", "0", "--kcal", "0", "--hr", "0", "--batt", "1", "--temp", "0"],
+        "idle": ["--mode", "idle"],
+        "sunrise": ["--time", "0520", "--solar", "sunrise", "--sunrisetime", "0546"],
+        "after_sunset": ["--time", "2030", "--solar", "sunrise", "--sunrisetime", "0546", "--ampm", "none"],
+        "negative": ["--temp", "-5", "--cond", "10"],
+    }
+    for name, options in scenarios.items():
+        run("tools/render_mockup.py", "build/verified_bin", f"out/preview_{name}.png", *options)
+    (ROOT / "out/stress").mkdir(exist_ok=True)
+    for time in ("0000", "0101", "0808", "1028", "1111", "1259", "1848", "2000", "2359"):
+        run("tools/render_mockup.py", "build/verified_bin", f"out/stress/{time}.png", "--time", time, "--ampm", "none")
+    shutil.copyfile(ROOT / "out/telu_trex_pro.bin", ROOT / "out/telu_university_v6.bin")
+    run("tools/make_contact_sheet.py")
+    print("BUILD OK -> out/telu_university_v6.bin")
+
 
 
 if __name__ == "__main__":

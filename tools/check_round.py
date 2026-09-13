@@ -133,6 +133,10 @@ def main():
                 delim = txt["Image"].get("DelimiterImageIndex")
                 check("%s %s" % (prefix, t),
                       *number_box(folder, txt, nd, suf, delim))
+                if t == "Weather" and delim is not None:
+                    x, y, w, h = number_box(folder, txt, nd, suf)
+                    mw, mh = dims(folder, delim)
+                    check("%s Weather negative" % prefix, x, y, w + mw, max(h, mh))
             if "Linear" in e:
                 seg = e["Linear"]["Segments"]
                 rng = e["Linear"]["ImageRange"]
@@ -144,6 +148,8 @@ def main():
                     with Image.open(Path(folder) / f"{rng['ImageIndex'] + i}.png") as im:
                         im = im.convert("RGBA")
                         for box, y0, y1 in ((icon_box, 0, 36), (label_box, 36, im.height)):
+                            if y0 >= y1:
+                                continue
                             crop = im.crop((0, y0, im.width, y1)).getbbox()
                             if crop is None:
                                 continue

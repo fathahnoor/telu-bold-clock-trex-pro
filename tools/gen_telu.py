@@ -1,22 +1,7 @@
 #!/usr/bin/env python3
-"""Generator aset + watchface.json v5 "TELKOM UNIVERSITY" (T-Rex Pro, 360x360).
+"""Generator V6 Performance: stacked time and compact sport panels.
 
-Revisi besar mengikuti v5/telkom_trex_pro_watchface_spec.md dan
-v5/v5_preview-reference.png:
-
-- Latar hitam bersih dengan cincin dan dekorasi vektor. Hanya ilustrasi
-  kampus di bawah yang diekstrak dari referensi.
-- Logo resmi Telkom University (Wikimedia Commons) dengan wordmark putih.
-- Waktu utama: angka jam dan menit putih, dengan titik dua merah.
-- Tanggal "Fri, 12 Sep": satu font monospace dan baris yang terpusat.
-- Empat gauge melingkar: STEPS, BPM, POWER, KCAL (busur CircleScale).
-- Modul solar dinamis "SUNRISE/SUNSET terdekat" (data Sunrise, tipe 12):
-  pasangan gambar ikon+label dengan pita tengah transparan untuk angka
-  waktu, sehingga hanya satu event tampil.
-- Cuaca: suhu + 29 banner kondisi (piktogram + label tertanam).
-- Always-on sama dengan mode normal: seluruh elemen tetap tampil.
-
-Output ke build/telu/: 0..N PNG + preview.png 220x220 + watchface.json.
+Adapted from the pinned V5 baseline; UIHH parameters and asset IDs retained.
 """
 
 import json
@@ -30,16 +15,17 @@ CX = CY = 180
 SAFE_R = 174
 
 # ---------------------------------------------------------------------------
-# Palet (spesifikasi v5)
+# Palet V6
 # ---------------------------------------------------------------------------
-RED = (255, 32, 41)           # Telkom red utama (#FF2029)
+RED = (237, 30, 40)           # Telkom red utama (#ED1E28)
 WHITE = (255, 255, 255)
 WHITE_SOFT = (241, 241, 241)
+MINUTE_GRAY = (210, 210, 212)
 GRAY_LABEL = (154, 154, 156)
 GRAY_RING = (58, 58, 60)
 GRAY_RIM = (88, 88, 92)
 YELLOW = (255, 210, 26)
-HEART = (255, 34, 78)
+HEART = (237, 30, 40)
 BLACK = (0, 0, 0)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -60,49 +46,31 @@ SS = 4  # supersampling teks/angka
 # ---------------------------------------------------------------------------
 # Geometri gauge, dengan ruang terpisah untuk waktu dan angka maksimum
 # ---------------------------------------------------------------------------
-GAUGES = {
-    "steps": dict(cx=60, cy=158, r=37, icon_cy=138, value_cy=163, label_cy=183),
-    "bpm": dict(cx=300, cy=158, r=37, icon_cy=138, value_cy=163, label_cy=183),
-    "power": dict(cx=90, cy=239, r=36, icon_cy=221, value_cy=243, label_cy=262),
-    "kcal": dict(cx=270, cy=239, r=36, icon_cy=219, value_cy=243, label_cy=262),
+METRICS = {
+    "steps": dict(cx=61, value_cy=154, icon_xy=(46, 121), label_xy=(39, 167)),
+    "bpm": dict(cx=78, value_cy=202, icon_xy=(38, 193), label_xy=(68, 216)),
+    "kcal": dict(cx=73, value_cy=252, icon_xy=(38, 243), label_xy=(66, 267)),
+    "power": dict(cx=306, value_cy=154, icon_xy=(293, 122), label_xy=(285, 167)),
 }
-
-# Waktu utama
-TIME_Y = 143
-TIME_CELL = (34, 52)
-HOUR_X = 105
-MINUTE_X = 187
-COLON_DOTS = [(176, 157, 183, 164), (176, 177, 183, 184)]
-
-# Tanggal
-DATE_Y = 116
-
-# Nilai metrik (sel + lebar maksimum untuk menghitung X rata tengah)
+TIME_Y = 103
+MINUTE_Y = 194
+TIME_CELL = (61, 88)
+HOUR_X = MINUTE_X = 117
+DATE_Y = 91
 METRIC_CELL = (10, 17)
-WEATHER_CELL = (11, 16)
+WEATHER_CELL = (8, 12)
 SOLAR_CELL = (9, 12)
-
-# Modul solar
-SOLAR_ICON_XY = (146, 218)
-SOLAR_ICON_SIZE = (68, 52)
+SOLAR_ICON_XY = (274, 189)
+SOLAR_ICON_SIZE = (64, 53)
 SOLAR_LABEL_Y = 43
-VALUE_SOLAR_CY = 250
-
-# Modul cuaca
-WEATHER_BANNER_XY = (239, 61)
-WEATHER_BANNER_SIZE = (76, 43)
-WEATHER_LABEL_Y = 31
-WEATHER_LABEL_CX = 35
-WEATHER_ICON_LOCAL = (0, 4)
-VALUE_TEMP = (265, 68)
-
-# AM/PM
-AMPM_XY = (168, 202)
-
-# AOD
-AOD_TIME_Y = 152
-AOD_DATE_Y = 240
-AOD_BATTERY_Y = 288
+VALUE_SOLAR_CY = 222
+WEATHER_BANNER_XY = (263, 248)
+WEATHER_BANNER_SIZE = (66, 36)
+WEATHER_LABEL_Y = 23
+WEATHER_LABEL_CX = 29
+WEATHER_ICON_LOCAL = (0, 0)
+VALUE_TEMP = (288, 253)
+AMPM_XY = (245, 160)
 
 # ---------------------------------------------------------------------------
 # Util gambar
@@ -149,7 +117,7 @@ def render_text(text, fnt, fill, tracking=0.0, pad=2):
 
 
 def make_digit(ch, cell_w, cell_h, font_path, font_size, fill=WHITE,
-               variation=None, stretch=1.0):
+               variation=None, stretch=1.0, fit_width=False):
     """Digit terpusat di sel tetap agar layout firmware deterministik.
 
     Glyph dirender pada kanvas besar, dipangkas ke bbox tinta, lalu diskalakan
@@ -163,18 +131,22 @@ def make_digit(ch, cell_w, cell_h, font_path, font_size, fill=WHITE,
     box = d.textbbox((0, 0), ch, font=fnt)
     d.text((-box[0], -box[1]), ch, font=fnt, fill=fill + (255,))
     glyph = big.crop((0, 0, box[2] - box[0], box[3] - box[1]))
+    glyph = glyph.crop(glyph.getbbox())
     if stretch != 1.0:
         glyph = glyph.resize((max(1, int(glyph.width * stretch)),
                               glyph.height), Image.LANCZOS)
     scale = (cell_h * ss) / glyph.height
     glyph = glyph.resize((max(1, int(glyph.width * scale)), cell_h * ss),
                          Image.LANCZOS)
-    if glyph.width > cell_w * ss:
+    if fit_width or glyph.width > cell_w * ss:
         glyph = glyph.resize((cell_w * ss, glyph.height), Image.LANCZOS)
     img = Image.new("RGBA", (cell_w * ss, cell_h * ss), (0, 0, 0, 0))
     img.alpha_composite(glyph, ((img.width - glyph.width) // 2,
                                 (img.height - glyph.height) // 2))
-    return img.resize((cell_w, cell_h), Image.LANCZOS)
+    mask = img.resize((cell_w, cell_h), Image.LANCZOS).getchannel("A")
+    result = Image.new("RGBA", (cell_w, cell_h), fill + (255,))
+    result.putalpha(mask)
+    return result
 
 
 def watch_angle_xy(cx, cy, r, deg):
@@ -380,7 +352,7 @@ def render_weather_icon(tokens, size=30):
 def make_weather_banners():
     w, h = WEATHER_BANNER_SIZE
     banners = []
-    fnt = font(F_MS, 7 * SS)
+    fnt = font(F_MS, 6 * SS)
     for label, tokens in CONDITIONS:
         img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
         img.alpha_composite(render_weather_icon(tokens, size=23),
@@ -400,7 +372,7 @@ def make_solar_banners():
         img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
         ic = icon_solar(kind, w=44, h=20).resize((34, 23), Image.LANCZOS)
         img.alpha_composite(ic, ((w - ic.width) // 2, 0))
-        txt = render_text(label, fnt, GRAY_LABEL, tracking=1.2)
+        txt = render_text(label, fnt, GRAY_LABEL, tracking=0.5)
         img.alpha_composite(txt, ((w - txt.width) // 2, SOLAR_LABEL_Y))
         out.append(img)
     return out
@@ -409,8 +381,8 @@ def make_solar_banners():
 # ---------------------------------------------------------------------------
 # Set teks
 # ---------------------------------------------------------------------------
-MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+          "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 DAYS_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
              "Saturday", "Sunday"]
 DAYS_SHORT = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
@@ -421,7 +393,8 @@ def make_month_images():
 
 
 def make_weekday_images():
-    return [date_text(d.title() + ",") for d in DAYS_SHORT]
+    return [render_text(d, font(F_INTER, 16 * SS, "Black"), RED, tracking=0.8)
+            for d in DAYS_SHORT]
 
 
 def date_text(text):
@@ -457,57 +430,72 @@ def make_cell_image(text, font_path, size, fill, cell_h=24, baseline=21,
 # ---------------------------------------------------------------------------
 
 def build_background():
-    # Hanya ilustrasi kampus diambil dari referensi. Semua area data dibuat
-    # dari kanvas bersih sehingga angka, cincin, dan tambalan lama tidak ikut.
     bg = Image.new("RGBA", (W, H), BLACK + (255,))
-    reference = Image.open(REFERENCE).convert("RGBA").resize((W, H), Image.LANCZOS)
-    campus = reference.crop((35, 278, 325, 341))
-    mask = Image.new("L", campus.size, 0)
-    md = ImageDraw.Draw(mask)
-    for y in range(campus.height):
-        md.line((0, y, campus.width, y), fill=min(255, y * 32))
-    campus.putalpha(mask)
-    bg.alpha_composite(campus, (35, 278))
-
-    # Dekorasi vektor pada resolusi tinggi, konsisten dengan posisi gauge.
-    layer = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+    # Campus is the same approved V5 artwork, reduced to a watermark.
+    reference = Image.open(REFERENCE).convert("RGB").resize((W, H), Image.LANCZOS)
+    campus = ImageOps.grayscale(reference.crop((35, 278, 325, 326)))
+    campus = campus.point(lambda p: min(80, round(p * 0.48))).convert("RGBA")
+    campus = campus.resize((250, 48), Image.LANCZOS)
+    bg.alpha_composite(campus, (55, 287))
+    layer = Image.new("RGBA", (W * SS, H * SS))
     d = ImageDraw.Draw(layer)
-
-    def ellipse(box, **kwargs):
-        d.ellipse(tuple(round(v * SS) for v in box), **kwargs)
-
-    ellipse((8, 8, 352, 352), outline=GRAY_RIM, width=SS)
-    for start, end in ((-140, -116), (-64, -40), (63, 76), (104, 117)):
-        d.arc((10 * SS, 10 * SS, 350 * SS, 350 * SS),
-              start, end, fill=RED, width=3 * SS)
-    for g in GAUGES.values():
-        cx, cy, r = g["cx"], g["cy"], g["r"]
-        ellipse((cx-r, cy-r, cx+r, cy+r), outline=GRAY_RING, width=5 * SS)
-    for box in COLON_DOTS:
-        d.rounded_rectangle(tuple(v * SS for v in box), radius=2 * SS, fill=RED)
-    for x0, x1 in ((110, 158), (201, 250)):
-        d.line((x0 * SS, 207 * SS, x1 * SS, 207 * SS), fill=GRAY_RING, width=SS)
-    bg.alpha_composite(layer.resize((W, H), Image.LANCZOS))
-
+    def line(points, color, width=1):
+        d.line([(round(x*SS), round(y*SS)) for x,y in points],
+               fill=color, width=width*SS, joint="curve")
+    # Segmented perimeter leaves the upper emblem and center calm.
+    d.ellipse((6*SS, 6*SS, 354*SS, 354*SS), outline=(55,55,57), width=SS)
+    for start,end in ((-138,-113),(-66,-42),(-27,-17),(25,36),(61,70),
+                      (81,99),(110,119),(144,156),(198,209)):
+        d.arc((10*SS,10*SS,350*SS,350*SS), start,end, fill=RED,width=3*SS)
+    for start,end in ((-110,-102),(-78,-70),(-40,-30),(39,52),(126,141),(214,224)):
+        d.arc((10*SS,10*SS,350*SS,350*SS),start,end,fill=(46,47,50),width=3*SS)
+    # Rounded asymmetric side panels, drawn as polygons at 4x resolution.
+    left=[(30,112),(66,108),(89,116),(98,136),(106,175),(105,197),
+          (95,230),(101,267),(97,282),(68,282),(46,277),(30,264),
+          (19,236),(14,205),(14,170),(18,140)]
+    right=[(330,112),(293,111),(274,122),(266,139),(276,173),(277,193),
+           (268,223),(253,267),(254,287),(291,287),(329,275),(341,248),
+           (341,211),(343,175),(339,140)]
+    for panel in (left,right):
+        # Periodic Catmull-Rom curve rounds the irregular panel perimeter.
+        pts=[]
+        for i in range(len(panel)):
+            p0,p1,p2,p3=[panel[j % len(panel)] for j in (i-1,i,i+1,i+2)]
+            for step in range(8):
+                t=step/8
+                pts.append(tuple(round(SS*0.5*((2*p1[k])+(-p0[k]+p2[k])*t+
+                    (2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t*t+
+                    (-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t*t*t)) for k in (0,1)))
+        d.polygon(pts,fill=(12,13,15))
+        d.line(pts+[pts[0]],fill=(35,36,39),width=4*SS,joint="curve")
+    line([(90,120),(97,141),(104,174)],RED,2)
+    line([(268,147),(275,176),(275,192),(265,222)],RED,2)
+    line([(27,143),(27,168)],RED,3)
+    line([(27,197),(27,219)],RED,3)
+    for y in (183,230):
+        line([(28,y),(92,y)],(65,65,68))
+    line([(282,183),(331,183)],(65,65,68))
+    line([(245,176),(264,176)],RED,2)
+    line([(62,101),(81,101)],RED,2)
+    # Sparse dots only outside the digit rectangles.
+    for y in range(41,70,5):
+        for x in list(range(79,114,5))+list(range(246,280,5)):
+            d.ellipse((x*SS,y*SS,x*SS+SS,y*SS+SS),fill=(16,16,18))
+    bg.alpha_composite(layer.resize((W,H),Image.LANCZOS))
     for row, text in enumerate(("HARMONY", "EXCELLENCE", "INTEGRITY")):
-        label = render_text(text, font(F_MM, 6 * SS), GRAY_LABEL, tracking=1.0)
-        bg.alpha_composite(label, (80 - label.width // 2, 65 + row * 11))
-    icons = {
-        "steps": svg_icon(ROOT / "assets" / "shoe-sneaker.svg", 24),
-        "bpm": svg_icon(ROOT / "assets" / "heart.svg", 22, fill=HEART),
-        "kcal": svg_icon(ROOT / "assets" / "fire.svg", 15, fill=RED),
-        "power": icon_battery().resize((28, 19), Image.LANCZOS),
-    }
-    for name, ic in icons.items():
-        g = GAUGES[name]
-        bg.alpha_composite(ic, (g["cx"] - ic.width // 2,
-                                g["icon_cy"] - ic.height // 2))
-    for name, text in (("steps", "STEPS"), ("bpm", "BPM"),
-                       ("power", "POWER"), ("kcal", "KCAL")):
-        g = GAUGES[name]
-        label = render_text(text, font(F_MM, 7 * SS), GRAY_LABEL, tracking=1.2)
-        bg.alpha_composite(label, (g["cx"] - label.width // 2,
-                                   g["label_cy"] - label.height // 2))
+        label=render_text(text,font(F_MM,6*SS),GRAY_LABEL,tracking=0.7)
+        bg.alpha_composite(label,(62,71+row*9))
+    icons={"steps":svg_icon(ROOT/"assets/shoe-sneaker.svg",24),
+           "bpm":svg_icon(ROOT/"assets/heart.svg",17,fill=RED),
+           "kcal":svg_icon(ROOT/"assets/fire.svg",14,fill=RED),
+           "power":icon_battery().resize((27,18),Image.LANCZOS)}
+    for name,icon in icons.items():
+        bg.alpha_composite(icon,METRICS[name]["icon_xy"])
+    for name,text in (("steps","STEPS"),("bpm","BPM"),("kcal","KCAL"),("power","POWER")):
+        label=render_text(text,font(F_MM,7*SS),GRAY_LABEL,tracking=0.6)
+        bg.alpha_composite(label,METRICS[name]["label_xy"])
+    label=render_text("TELKOM UNIVERSITY",font(F_MS,6*SS),GRAY_LABEL,tracking=1.4)
+    bg.alpha_composite(label,(180-label.width//2,339))
     return bg
 
 
@@ -522,47 +510,14 @@ def logo_image():
             if al > 0 and max(r, g, b) < 150:
                 v = 245 if y < int(logo.height * 0.86) else 225
                 px[x, y] = (v, v, v, al)
-    target_w = 74
+    target_w = 66
     ratio = target_w / logo.width
     return logo.resize((target_w, int(logo.height * ratio)), Image.LANCZOS)
-
-
-def build_aod_background():
-    aod = Image.new("RGBA", (W, H), BLACK + (255,))
-    u_only = Image.open(LOGO).convert("RGBA")
-    u_only = u_only.crop((0, 520, u_only.width, 1460))
-    box = u_only.getbbox()
-    u_only = u_only.crop(box)
-    ratio = 30 / u_only.width
-    u_only = u_only.resize((30, max(1, int(u_only.height * ratio))),
-                           Image.LANCZOS)
-    px = u_only.load()
-    for y in range(u_only.height):
-        for x in range(u_only.width):
-            r, g, b, al = px[x, y]
-            if al > 0:
-                v = int(0.42 * (r + g + b) / 3) + 30
-                px[x, y] = (v, v, v, al)
-    aod.alpha_composite(u_only, (CX - 15, 58))
-    d = ImageDraw.Draw(aod)
-    for box in COLON_DOTS:
-        d.rounded_rectangle((box[0], box[1] + AOD_TIME_Y - TIME_Y,
-                             box[2], box[3] + AOD_TIME_Y - TIME_Y),
-                            radius=3, fill=RED + (255,))
-    return aod
 
 
 # ---------------------------------------------------------------------------
 # Parameter
 # ---------------------------------------------------------------------------
-
-def gauge_circle_scale(g, color="0xFFFF2029", width=5):
-    return {
-        "Angle": {"X": g["cx"], "Y": g["cy"], "StartAngle": 0.0,
-                  "EndAngle": 360.0, "Radius": float(g["r"])},
-        "Color": color, "Width": width, "Flatness": 180,
-    }
-
 
 def number_text(x, y, index, count, align="Left", spacing=0, zeropad=0,
                 nodata=None, suffix=None, decimal=None, delimiter=None,
@@ -596,9 +551,9 @@ def main():
         state["i"] += 1
 
     bg = build_background()
-    bg.alpha_composite(logo_image(), (143, 17))
+    bg.alpha_composite(logo_image(), (147, 13))
     save(bg, "background")
-    save(build_aod_background(), "background AOD")
+    save(bg.copy(), "background AOD (identical)")
     save(logo_image(), "logo (cadangan)")
 
     # AM / PM
@@ -606,11 +561,11 @@ def main():
         img = render_text(txt, font(F_MS, 11 * SS), GRAY_LABEL, tracking=1.0)
         save(img, f"badge {txt}")
 
-    # Waktu: kedua set digit putih untuk jam dan menit.
-    for fill in (WHITE, WHITE):
+    # Jam putih dan menit abu-abu terang, keduanya 88 px.
+    for fill in (WHITE, MINUTE_GRAY):
         for dch in "0123456789":
             save(make_digit(dch, TIME_CELL[0], TIME_CELL[1], F_INTER, 96,
-                            fill=fill, variation="Black", stretch=0.71),
+                            fill=fill, variation="Black", stretch=0.90, fit_width=True),
                  f"time digit {dch}")
     # Digit nilai metrik.
     for dch in "0123456789":
@@ -640,8 +595,8 @@ def main():
          "percent")
     save(make_cell_image(",", F_INTER, 18, WHITE, cell_h=17, baseline=17,
                          variation="Black"), "comma")
-    save(make_cell_image("\u00b0C", F_INTER, 13, WHITE, cell_h=16,
-                         baseline=15, variation="Black"), "degree")
+    save(make_cell_image("\u00b0C", F_INTER, 9, WHITE, cell_h=12,
+                         baseline=11, variation="Black"), "degree")
     save(render_text("--", font(F_INTER, 22 * SS, "Black"), WHITE), "nodata")
 
     # Bulan & hari.
@@ -681,15 +636,17 @@ def main():
     I_WEATHER = 87
     I_SOLAR_ICON = 116
     I_DATE_D = 118
-    assert state["i"] == 128, f"jumlah aset tak terduga: {state['i']}"
+    I_MINUS = state["i"]
+    save(make_cell_image("-", F_INTER, 12, WHITE, cell_h=12, baseline=8), "weather minus")
+    assert state["i"] == 129, f"jumlah aset tak terduga: {state['i']}"
 
     # ------------------------- parameter ----------------------------------
     time_digital = {
         "HoursMinutesSeconds": [
             {"Type": 0, "Independent": True,
-             "Text": number_text(HOUR_X, TIME_Y, I_TIME_H, 10, zeropad=1)},
+             "Text": number_text(HOUR_X, TIME_Y, I_TIME_H, 10, zeropad=1, spacing=2)},
             {"Type": 1, "Independent": True,
-             "Text": number_text(MINUTE_X, TIME_Y, I_TIME_M, 10, zeropad=1)},
+             "Text": number_text(MINUTE_X, MINUTE_Y, I_TIME_M, 10, zeropad=1, spacing=2)},
         ],
         "AM": {"Coordinates": {"X": AMPM_XY[0], "Y": AMPM_XY[1]},
                "ImageRange": {"Language": 2,
@@ -701,11 +658,10 @@ def main():
                                              "ImagesCount": 1}}},
     }
 
-    # Eleven fixed advances: "Fri, 12 Sep". Every date has the same width,
-    # so the complete line stays centered without runtime repositioning.
-    week_x = CX - 11 * DATE_CELL[0] // 2
-    day_x = week_x + 5 * DATE_CELL[0]
-    month_x = week_x + 8 * DATE_CELL[0]
+    # Two-line date: red weekday above fixed-cell day and month.
+    week_x = 261
+    day_x = 259
+    month_x = 280
 
     date_system = {
         "YearMonthDay": [
@@ -716,7 +672,7 @@ def main():
                                  unknown6=1)},
         ],
         "Week": {"Independent": True,
-                 "Text": number_text(week_x, DATE_Y, I_DAYFULL, 7,
+                 "Text": number_text(week_x, 76, I_DAYFULL, 7,
                                      zeropad=0, unknown6=1)},
     }
 
@@ -732,32 +688,28 @@ def main():
 
     data_system = [
         {"Type": "Battery",
-         "CircleScale": gauge_circle_scale(GAUGES["power"]),
          "NumberSequence": {"Independent": True,
-                            "Text": value_text(GAUGES["power"]["cx"], 3,
-                                               GAUGES["power"]["value_cy"] - 8,
+                            "Text": value_text(METRICS["power"]["cx"], 3,
+                                               METRICS["power"]["value_cy"] - 8,
                                                {"suffix": I_PCT})}},
         {"Type": "Steps",
-         "CircleScale": gauge_circle_scale(GAUGES["steps"]),
          "NumberSequence": {"Independent": True,
-                            "Text": value_text(GAUGES["steps"]["cx"], 5,
-                                               GAUGES["steps"]["value_cy"] - 8,
+                            "Text": value_text(METRICS["steps"]["cx"], 5,
+                                               METRICS["steps"]["value_cy"] - 8,
                                                {"delimiter": I_COMMA})}},
         {"Type": "Calories",
-         "CircleScale": gauge_circle_scale(GAUGES["kcal"]),
          "NumberSequence": {"Independent": True,
-                            "Text": value_text(GAUGES["kcal"]["cx"], 4,
-                                               GAUGES["kcal"]["value_cy"] - 8)}},
+                            "Text": value_text(METRICS["kcal"]["cx"], 4,
+                                               METRICS["kcal"]["value_cy"] - 8)}},
         {"Type": "HeartRate",
-         "CircleScale": gauge_circle_scale(GAUGES["bpm"]),
          "NumberSequence": {"Independent": True,
-                            "Text": value_text(GAUGES["bpm"]["cx"], 3,
-                                               GAUGES["bpm"]["value_cy"] - 8)}},
+                            "Text": value_text(METRICS["bpm"]["cx"], 3,
+                                               METRICS["bpm"]["value_cy"] - 8)}},
         {"Type": "Weather",
          "NumberSequence": {"Independent": True,
                             "Text": number_text(VALUE_TEMP[0], VALUE_TEMP[1],
                                                 I_WEATHER_D, 10, nodata=I_NODATA,
-                                                suffix=I_DEG)}},
+                                                suffix=I_DEG, delimiter=I_MINUS)}},
         {"Type": "Weather",
          "Linear": {"Segments": {"X": WEATHER_BANNER_XY[0],
                                  "Y": WEATHER_BANNER_XY[1]},
@@ -776,10 +728,10 @@ def main():
                                    "ImagesCount": 2}}},
     ]
     solar_w = 4 * SOLAR_CELL[0] + 7
-    data_system[6]["NumberSequence"]["Text"]["Image"]["X"] = 180 - solar_w // 2
-    data_system[6]["NumberSequence"]["Text"]["Image"]["Y"] = VALUE_SOLAR_CY - 6  # noqa: E501
+    data_system[6]["NumberSequence"]["Text"]["Image"]["X"] = 306 - solar_w // 2
+    data_system[6]["NumberSequence"]["Text"]["Image"]["Y"] = VALUE_SOLAR_CY - 2  # noqa: E501
 
-    # Always-on memakai seluruh layout normal, termasuk cuaca dan gauge.
+    # Always-on memakai seluruh layout normal, termasuk cuaca dan panel.
     idle = {
         "Time": {"Digital": time_digital},
         "Date": date_system,
