@@ -16,7 +16,7 @@ Referensi visual adalah MD dan PNG pengguna di root. Penyesuaian dilakukan untuk
 | Kampus | X 55, Y 287; 250 x 48, luminansi dibatasi 80/255 |
 | AOD | Seluruh parameter dan background sama dengan normal |
 
-Angka Inter Black dipangkas ke tinta sebelum rasterisasi. Sel waktu mempunyai lebar tinta tetap agar `01`, `11`, `00`, dan pasangan lain tetap terpusat. Alpha menjadi mask warna solid untuk menjaga putih dan abu-abu dari perubahan RGB pada tepi antialias. Panel memakai kurva dari titik kontrol; teks dan ikon tetap terpisah dari garis panel.
+Angka Inter Black dipangkas ke tinta sebelum rasterisasi. Sel waktu tetap berukuran 61 x 88 piksel. Digit `1` mempertahankan proporsi alaminya dengan tinta selebar 45 piksel, terpusat di dalam sel dengan margin 8 piksel pada tiap sisi. Digit lain tetap memakai raster sebelumnya. Posisi sel tidak bergeser saat waktu berubah; lebar tinta pasangan dapat berbeda secara alami. Alpha menjadi mask warna solid untuk menjaga putih dan abu-abu dari perubahan RGB pada tepi antialias. Panel memakai kurva dari titik kontrol; teks dan ikon tetap terpisah dari garis panel.
 
 ## Batas kompatibilitas
 

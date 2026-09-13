@@ -1,7 +1,7 @@
 {
   "file": "telu_trex_pro.bin",
-  "sha256": "22de5a4a6e89c76b6074eeeaf696a052461269024fb78b318c682d405cf2d083",
-  "bytes": 428054,
+  "sha256": "d97cbb51b76ddf8cfa493776461f0945d804084acbb100b6d53a77b3767150dc",
+  "bytes": 428237,
   "format": "UIHH v2 compressed",
   "images": 130,
   "params_equal": true,

@@ -6,7 +6,9 @@
 - Solar memakai Type Sunrise (12), NumberSequence tanpa subtype dan dua banner Linear. Transisi persis terhadap sunrise/sunset belum terbukti di firmware.
 - Renderer baseline melewatkan minus suhu. Catatan format baseline menyediakan DelimiterImageIndex untuk minus Weather; perlu adaptasi renderer dan validator agar preview jujur.
 - Pillow, svglib, dan reportlab tersedia tanpa instalasi tambahan.
-- V6: 130 gambar termasuk preview internal, 428.054 byte, piksel round-trip delta 0.
+- V6: 130 gambar termasuk preview internal, 428.237 byte, piksel round-trip delta 0.
 - 27 unit test lulus. Sembilan waktu stress dan enam skenario wajib sudah dirender dari BIN.
 - Codec dan packer memiliki SHA-256 identik dengan baseline; audit ada di `out/qa.json`.
 - Parameter suhu negatif ditambahkan sesuai catatan format baseline. Renderer dan validator sudah menguji minus; firmware tetap perlu diperiksa.
+
+- Koreksi pengguna: digit 1 terlalu lebar akibat fit_width. Kini digit 1 memakai proporsi alami, tinta 45 px di tengah sel 61 px.

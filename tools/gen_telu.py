@@ -565,7 +565,8 @@ def main():
     for fill in (WHITE, MINUTE_GRAY):
         for dch in "0123456789":
             save(make_digit(dch, TIME_CELL[0], TIME_CELL[1], F_INTER, 96,
-                            fill=fill, variation="Black", stretch=0.90, fit_width=True),
+                            fill=fill, variation="Black", stretch=0.90,
+                            fit_width=dch != "1"),
                  f"time digit {dch}")
     # Digit nilai metrik.
     for dch in "0123456789":

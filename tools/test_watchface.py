@@ -173,12 +173,25 @@ class WatchfaceV6Tests(unittest.TestCase):
         entries = params['Time']['Digital']['HoursMinutesSeconds']
         coords = [(e['Text']['Image']['X'],e['Text']['Image']['Y']) for e in entries]
         self.assertEqual(coords, [(117,103),(117,194)])
+        for entry in entries:
+            base = entry['Text']['Image']['ImageRange']['ImageRange']['ImageIndex']
+            zero = images[base].getbbox()
+            one = images[base+1].getbbox()
+            # The glyph stays naturally narrow inside a fixed advance cell.
+            self.assertLess(one[2]-one[0], (zero[2]-zero[0])*0.8)
+            self.assertGreater(one[2]-one[0], (zero[2]-zero[0])*0.5)
+            for digit in range(10):
+                sprite = images[base+digit]
+                box = sprite.getbbox()
+                self.assertEqual(sprite.size, TIME_CELL)
+                self.assertLessEqual(abs((box[0]+box[2])/2-TIME_CELL[0]/2),0.5)
         for pair in ('00','01','08','10','11','18','20','23','28','44','48','58','59'):
             for entry in entries:
                 canvas = Image.new('RGBA',(360,360))
                 draw_number(canvas,images,entry['Text'],pair)
                 bbox = canvas.getbbox()
-                self.assertLessEqual(abs((bbox[0]+bbox[2])/2-179),0.5,(pair,bbox))
+                self.assertGreaterEqual(bbox[0],117)
+                self.assertLessEqual(bbox[2],241)
                 self.assertEqual(bbox[3]-bbox[1],88)
 
     def test_metric_groups_stay_centered_for_every_digit_length(self):
