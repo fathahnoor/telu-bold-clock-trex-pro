@@ -14,7 +14,7 @@ Build dan validasi software selesai. **Uji instalasi pada jam fisik masih pendin
 
 Preview di atas dibuat dari parameter dan gambar yang diekstrak kembali dari BIN hasil build. Skenario solar dipilih secara eksplisit untuk memeriksa tata letak. Preview tersebut tidak membuktikan firmware sudah menjalankan transisi otomatis.
 
-- Jam putih `#FFFFFF`, menit `#D2D2D4`, aksen Tel-U `#ED1E28`, latar hitam.
+- Jam putih `#FFFFFF`, menit `#848688`, aksen Tel-U `#ED1E28`, latar hitam.
 - Steps, BPM, kcal, baterai, tanggal, bulan, hari, AM/PM, suhu, dan 29 banner cuaca.
 - Satu slot sunrise/sunset dengan mekanisme closest-event dari baseline.
 - Always-on memuat komposisi dan warna yang sama dengan mode normal.

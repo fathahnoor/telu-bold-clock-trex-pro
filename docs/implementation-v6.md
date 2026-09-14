@@ -7,7 +7,7 @@ Referensi visual adalah MD dan PNG pengguna di root. Penyesuaian dilakukan untuk
 | Elemen | Implementasi |
 | --- | --- |
 | Jam | X 117, Y 103; dua sel 61 x 88, jarak 2 px, putih |
-| Menit | X 117, Y 194; sel yang sama, abu-abu #D2D2D4 |
+| Menit | X 117, Y 194; sel yang sama, abu-abu #848688 |
 | AM/PM | X 245, Y 160 |
 | Hari | X 261, Y 76, merah |
 | Tanggal dan bulan | X 259 dan 280, Y 91 |

@@ -2,7 +2,7 @@
   "tests": 27,
   "result": "PASS",
   "date_combinations": 2604,
-  "bin_sha256": "d97cbb51b76ddf8cfa493776461f0945d804084acbb100b6d53a77b3767150dc",
+  "bin_sha256": "2e53d4debc9531d17acafa9b1ff5d88111ba1c8641e7d9222b88d06e51e1cb96",
   "unchanged_baseline_codecs": {
     "tools/trexpro_wf.py": "db5ac32bb1c56b15e701fb0385e738a849a9ac06d75437ce9bb8ab44fca9a587",
     "tools/pack_watchface.py": "8f5b897e9f8f44120b58aa8c3098f63291224f7f9f6b00e3db1aa80cb9a364e9"
@@ -21,5 +21,6 @@
     "height": 88,
     "centered": true,
     "regression_reproduced_before_fix": true
-  }
+  },
+  "minute_color": "#848688"
 }
