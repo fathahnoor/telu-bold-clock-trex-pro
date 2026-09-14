@@ -1,25 +1,25 @@
 {
-  "verified_commit": "f428e73377a0abc1fbb60f21b67d4d247c5c92c5",
+  "verified_commit": "72aed7683c72bf01d4cd7ebba6590b753609b6dd",
   "repository": "fathahnoor/telu-bold-clock-trex-pro",
   "files": {
     "out/telu_university_v6.bin": {
-      "bytes": 428237,
-      "sha256": "d97cbb51b76ddf8cfa493776461f0945d804084acbb100b6d53a77b3767150dc",
+      "bytes": 427877,
+      "sha256": "2e53d4debc9531d17acafa9b1ff5d88111ba1c8641e7d9222b88d06e51e1cb96",
       "identical": true
     },
     "out/telu_trex_pro.bin": {
-      "bytes": 428237,
-      "sha256": "d97cbb51b76ddf8cfa493776461f0945d804084acbb100b6d53a77b3767150dc",
+      "bytes": 427877,
+      "sha256": "2e53d4debc9531d17acafa9b1ff5d88111ba1c8641e7d9222b88d06e51e1cb96",
       "identical": true
     },
     "out/preview.png": {
-      "bytes": 66600,
-      "sha256": "db6517db52eb9649974fca925e5e4374039d08d1e2a9f3aeaaedda662f42cc67",
+      "bytes": 66532,
+      "sha256": "6be496df6c22624810770234c4063f405ab3b27f3ae27022c1fa93564ce6714a",
       "identical": true
     },
     "out/preview_idle.png": {
-      "bytes": 66600,
-      "sha256": "db6517db52eb9649974fca925e5e4374039d08d1e2a9f3aeaaedda662f42cc67",
+      "bytes": 66532,
+      "sha256": "6be496df6c22624810770234c4063f405ab3b27f3ae27022c1fa93564ce6714a",
       "identical": true
     }
   }
