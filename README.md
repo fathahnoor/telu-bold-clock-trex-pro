@@ -67,4 +67,4 @@ Proyek personal, bukan produk resmi Telkom University atau Amazfit. Tidak ada kl
 
 ![Perbandingan AOD](out/aod-comparison.png)
 
-Aset AOD dihitung saat build, tanpa menambahkan timer atau animasi pada jam. Semua metrik tetap tampil; mode normal tidak berubah. Penurunan sinyal RGB sekitar 28% merupakan ukuran gambar, bukan hasil ukur baterai. Detail, batas firmware, dan cara membandingkan baterai ada di [catatan AOD](docs/aod-power.md).
+Aset AOD dihitung saat build, tanpa menambahkan timer atau animasi pada jam. Semua metrik tetap tampil; mode normal hanya berubah pada revisi pembesaran angka tanggal. Penurunan sinyal RGB sekitar 28% merupakan ukuran gambar, bukan hasil ukur baterai. Detail, batas firmware, dan cara membandingkan baterai ada di [catatan AOD](docs/aod-power.md).

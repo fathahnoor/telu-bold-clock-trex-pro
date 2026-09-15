@@ -2,7 +2,7 @@
   "tests": 30,
   "result": "PASS",
   "date_combinations": 2604,
-  "bin_sha256": "04bd8391e07bcc9c7c9a5143a4241149e3b3cd6a2e21ba2db3ccf40c8bcbcc0d",
+  "bin_sha256": "673933736691bc9dfe285f5f79f4d9299e1404b7d9230a1b0ab34508465953b0",
   "unchanged_baseline_codecs": {
     "tools/trexpro_wf.py": "db5ac32bb1c56b15e701fb0385e738a849a9ac06d75437ce9bb8ab44fca9a587",
     "tools/pack_watchface.py": "8f5b897e9f8f44120b58aa8c3098f63291224f7f9f6b00e3db1aa80cb9a364e9"
@@ -23,7 +23,12 @@
     "regression_reproduced_before_fix": true
   },
   "minute_color": "#848688",
-  "normal_unchanged_from_previous_release": true,
+  "normal_unchanged_from_previous_release": false,
   "aod_components_preserved": true,
-  "measured_battery_saving": null
+  "measured_battery_saving": null,
+  "normal_unchanged_outside_date": true,
+  "date_digit_size": [
+    11,
+    17
+  ]
 }

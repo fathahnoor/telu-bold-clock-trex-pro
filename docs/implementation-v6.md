@@ -10,7 +10,7 @@ Referensi visual adalah MD dan PNG pengguna di root. Penyesuaian dilakukan untuk
 | Menit | X 117, Y 194; sel yang sama, abu-abu #848688 |
 | AM/PM | X 245, Y 160 |
 | Hari | X 261, Y 76, merah |
-| Tanggal dan bulan | X 259 dan 280, Y 91 |
+| Tanggal dan bulan | Angka X 259, Y 95, sel 11 x 17; bulan X 285, Y 92 |
 | Panel kiri | Steps, BPM, kcal; tanpa CircleScale |
 | Panel kanan | Baterai, satu slot solar, cuaca |
 | Kampus | X 55, Y 287; 250 x 48, luminansi dibatasi 80/255 |
@@ -34,7 +34,7 @@ Mode waktu mengikuti firmware. Preview dapat menampilkan AM/PM atau menghilangka
 - Validator collision menggabungkan semua varian digit, panjang nilai, suffix, no-data, bulan, hari, banner cuaca, dan solar. Alpha di atas 48 serta detail background di atas luminansi maksimum kanal 24 menjadi obstacle.
 - CircleScale dihilangkan dari data V6, sehingga gauge lama tidak mungkin muncul dari parameter binary.
 - Verifikasi binary memeriksa target perangkat, ukuran blok kompresi, indeks gambar, parameter, ukuran sprite, dan piksel round-trip.
-- Preview normal identik dengan rilis sebelum optimasi. AOD mempertahankan alpha, geometri, dan seluruh field, dengan RGB lebih rendah.
+- Preview normal identik dengan rilis sebelum optimasi di luar area tanggal yang diperbesar. AOD mempertahankan alpha, geometri, dan seluruh field, dengan RGB lebih rendah.
 - Uji tanggal mencakup 7 x 31 x 12 = 2.604 kombinasi untuk pemeriksaan lebar, termasuk kombinasi tanggal yang tidak ada di kalender nyata.
 - Nilai uji mencakup daftar spesifikasi, ditambah 99.999 langkah, 9.999 kcal, serta suhu -99 dan 99 derajat untuk batas representasi dua digit.
 - File input pengguna dipertahankan; preview tidak digunakan sebagai bukti uji fisik.
@@ -42,3 +42,5 @@ Mode waktu mengikuti firmware. Preview dapat menampilkan AM/PM atau menghilangka
 `out/validation.json` menyimpan hasil binary. Jalankan unit test sesudah build berhasil. Jangan memakai hasil unit test dari BIN lama ketika build baru gagal.
 
 Optimasi AOD 16 September dijelaskan di [aod-power.md](aod-power.md).
+
+Revisi tanggal: angka memakai Inter Black dengan tinggi tinta 17 px, bulan tetap kecil. Keduanya memakai aset yang sama pada normal dan AOD.

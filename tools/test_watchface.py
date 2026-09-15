@@ -231,7 +231,7 @@ class WatchfaceV6Tests(unittest.TestCase):
                     draw_date(canvas, images, params['System']['Date'],
                               dict(wday=weekday, day=day, month=month))
                     box = canvas.getbbox()
-                    self.assertTrue(259 <= box[0] < box[2] <= 306 and 76 <= box[1] < box[3] <= 109,
+                    self.assertTrue(259 <= box[0] < box[2] <= 310 and 76 <= box[1] < box[3] <= 112,
                                     (weekday,day,month,box))
 
     def test_colored_svg_keeps_transparent_corners(self):

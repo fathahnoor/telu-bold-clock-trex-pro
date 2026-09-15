@@ -1,5 +1,5 @@
 {
-  "bin_sha256": "04bd8391e07bcc9c7c9a5143a4241149e3b3cd6a2e21ba2db3ccf40c8bcbcc0d",
+  "bin_sha256": "673933736691bc9dfe285f5f79f4d9299e1404b7d9230a1b0ab34508465953b0",
   "metric": "Sum of encoded RGB channel values; not watts, luminance or battery life",
   "measured_battery_saving": null,
   "firmware_refresh_control": false,
@@ -8,57 +8,57 @@
   "scenarios": [
     {
       "time": "0000",
-      "normal_rgb_sum": 13317489,
-      "aod_rgb_sum": 9611636,
-      "rgb_signal_reduction_percent": 27.83
+      "normal_rgb_sum": 13411092,
+      "aod_rgb_sum": 9705239,
+      "rgb_signal_reduction_percent": 27.63
     },
     {
       "time": "0101",
-      "normal_rgb_sum": 11878734,
-      "aod_rgb_sum": 8531317,
-      "rgb_signal_reduction_percent": 28.18
+      "normal_rgb_sum": 11972337,
+      "aod_rgb_sum": 8624920,
+      "rgb_signal_reduction_percent": 27.96
     },
     {
       "time": "0808",
-      "normal_rgb_sum": 13561122,
-      "aod_rgb_sum": 9794428,
-      "rgb_signal_reduction_percent": 27.78
+      "normal_rgb_sum": 13654725,
+      "aod_rgb_sum": 9888031,
+      "rgb_signal_reduction_percent": 27.59
     },
     {
       "time": "1028",
-      "normal_rgb_sum": 12402266,
-      "aod_rgb_sum": 8977151,
-      "rgb_signal_reduction_percent": 27.62
+      "normal_rgb_sum": 12495869,
+      "aod_rgb_sum": 9070754,
+      "rgb_signal_reduction_percent": 27.41
     },
     {
       "time": "1111",
-      "normal_rgb_sum": 10439979,
-      "aod_rgb_sum": 7450998,
-      "rgb_signal_reduction_percent": 28.63
+      "normal_rgb_sum": 10533582,
+      "aod_rgb_sum": 7544601,
+      "rgb_signal_reduction_percent": 28.38
     },
     {
       "time": "1259",
-      "normal_rgb_sum": 12380696,
-      "aod_rgb_sum": 8974950,
-      "rgb_signal_reduction_percent": 27.51
+      "normal_rgb_sum": 12474299,
+      "aod_rgb_sum": 9068553,
+      "rgb_signal_reduction_percent": 27.3
     },
     {
       "time": "1848",
-      "normal_rgb_sum": 12530382,
-      "aod_rgb_sum": 9061706,
-      "rgb_signal_reduction_percent": 27.68
+      "normal_rgb_sum": 12623985,
+      "aod_rgb_sum": 9155309,
+      "rgb_signal_reduction_percent": 27.48
     },
     {
       "time": "2000",
-      "normal_rgb_sum": 13211175,
-      "aod_rgb_sum": 9537416,
-      "rgb_signal_reduction_percent": 27.81
+      "normal_rgb_sum": 13304778,
+      "aod_rgb_sum": 9631019,
+      "rgb_signal_reduction_percent": 27.61
     },
     {
       "time": "2359",
-      "normal_rgb_sum": 13112513,
-      "aod_rgb_sum": 9485685,
-      "rgb_signal_reduction_percent": 27.66
+      "normal_rgb_sum": 13206116,
+      "aod_rgb_sum": 9579288,
+      "rgb_signal_reduction_percent": 27.46
     }
   ]
 }

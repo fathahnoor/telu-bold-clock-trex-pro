@@ -6,7 +6,7 @@
 - Solar memakai Type Sunrise (12), NumberSequence tanpa subtype dan dua banner Linear. Transisi persis terhadap sunrise/sunset belum terbukti di firmware.
 - Renderer baseline melewatkan minus suhu. Catatan format baseline menyediakan DelimiterImageIndex untuk minus Weather; perlu adaptasi renderer dan validator agar preview jujur.
 - Pillow, svglib, dan reportlab tersedia tanpa instalasi tambahan.
-- V6: 150 gambar termasuk preview internal, 491755 byte, piksel round-trip delta 0.
+- V6: 150 gambar termasuk preview internal, 494271 byte, piksel round-trip delta 0.
 - 30 unit test lulus. Sembilan waktu stress dan enam skenario wajib sudah dirender dari BIN.
 - Codec dan packer memiliki SHA-256 identik dengan baseline; audit ada di `out/qa.json`.
 - Parameter suhu negatif ditambahkan sesuai catatan format baseline. Renderer dan validator sudah menguji minus; firmware tetap perlu diperiksa.
@@ -16,3 +16,5 @@
 - Warna menit mengikuti revisi pengguna 14 September: #848688, RGB (132,134,136), diambil dari warna isi abu-abu muda aset logo Tel-U.
 
 - AOD: LUT saat build, 20 sprite tambahan, metrik/tanggal berbagi aset. Tidak ada kontrol refresh tervalidasi. Laporan RGB bukan pengukuran daya.
+
+- Angka tanggal diperbesar menjadi tinggi tinta 17 px, posisi (259,95), bulan (285,92). Seluruh 2.604 kombinasi dan 30 test lulus.

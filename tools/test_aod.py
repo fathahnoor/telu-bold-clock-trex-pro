@@ -22,9 +22,13 @@ class AodTests(unittest.TestCase):
                 self.assertEqual(src.getchannel("A").tobytes(),dst.getchannel("A").tobytes())
                 self.assertEqual(aod_dim(src,gain).tobytes(),dst.tobytes())
 
-    def test_normal_preview_unchanged_from_previous_release(self):
-        self.assertEqual(Image.open(ROOT/"out/preview.png").convert("RGB").tobytes(),
-                         Image.open(ROOT/"out/baseline/preview_idle.png").convert("RGB").tobytes())
+    def test_normal_preview_unchanged_outside_enlarged_date(self):
+        from PIL import ImageDraw
+        current = Image.open(ROOT/"out/preview.png").convert("RGB")
+        previous = Image.open(ROOT/"out/baseline/preview_idle.png").convert("RGB")
+        for image in (current, previous):
+            ImageDraw.Draw(image).rectangle((259,91,310,112), fill="black")
+        self.assertEqual(current.tobytes(), previous.tobytes())
 
     def test_dim_preserves_black_and_faint_detail(self):
         image=Image.new("RGBA",(256,1))

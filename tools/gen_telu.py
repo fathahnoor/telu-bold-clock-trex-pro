@@ -625,7 +625,9 @@ def main():
     for kind, img in zip(("sunrise", "sunset"), make_solar_banners()):
         save(img, f"solar {kind}")
     for digit in "0123456789":
-        save(date_text(digit), f"date digit {digit}")
+        save(make_digit(digit, 11, 17, F_INTER, 27,
+                        fill=WHITE, variation="Black", stretch=0.8),
+             f"date digit {digit}")
 
     # ------------------------- indeks aset --------------------------------
     I_BG = 0
@@ -673,14 +675,14 @@ def main():
     # Two-line date: red weekday above fixed-cell day and month.
     week_x = 261
     day_x = 259
-    month_x = 280
+    month_x = 285
 
     date_system = {
         "YearMonthDay": [
             {"Type": 2, "Independent": True,
-             "Text": number_text(day_x, DATE_Y, I_DATE_D, 10, zeropad=1)},
+             "Text": number_text(day_x, 95, I_DATE_D, 10, zeropad=1)},
             {"Type": 1, "Independent": True,
-             "Text": number_text(month_x, DATE_Y, I_MONTH, 12, zeropad=0,
+             "Text": number_text(month_x, 92, I_MONTH, 12, zeropad=0,
                                  unknown6=1)},
         ],
         "Week": {"Independent": True,

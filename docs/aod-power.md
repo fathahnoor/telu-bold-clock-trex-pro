@@ -1,6 +1,6 @@
 # AOD dengan intensitas lebih rendah
 
-Revisi 16 September 2026 mempertahankan semua komponen, ukuran digit, alpha, koordinat, tanggal, sensor, cuaca, dan solar. Mode normal tidak berubah.
+Revisi 16 September 2026 mempertahankan semua komponen, ukuran digit, alpha, koordinat, tanggal, sensor, cuaca, dan solar. Mode normal tidak berubah oleh optimasi AOD. Revisi berikutnya memperbesar angka tanggal pada kedua mode.
 
 ## Yang diubah
 
