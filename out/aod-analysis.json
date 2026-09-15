@@ -1,0 +1,64 @@
+{
+  "bin_sha256": "04bd8391e07bcc9c7c9a5143a4241149e3b3cd6a2e21ba2db3ccf40c8bcbcc0d",
+  "metric": "Sum of encoded RGB channel values; not watts, luminance or battery life",
+  "measured_battery_saving": null,
+  "firmware_refresh_control": false,
+  "extra_time_sprites": 20,
+  "shared_date_and_metrics": true,
+  "scenarios": [
+    {
+      "time": "0000",
+      "normal_rgb_sum": 13317489,
+      "aod_rgb_sum": 9611636,
+      "rgb_signal_reduction_percent": 27.83
+    },
+    {
+      "time": "0101",
+      "normal_rgb_sum": 11878734,
+      "aod_rgb_sum": 8531317,
+      "rgb_signal_reduction_percent": 28.18
+    },
+    {
+      "time": "0808",
+      "normal_rgb_sum": 13561122,
+      "aod_rgb_sum": 9794428,
+      "rgb_signal_reduction_percent": 27.78
+    },
+    {
+      "time": "1028",
+      "normal_rgb_sum": 12402266,
+      "aod_rgb_sum": 8977151,
+      "rgb_signal_reduction_percent": 27.62
+    },
+    {
+      "time": "1111",
+      "normal_rgb_sum": 10439979,
+      "aod_rgb_sum": 7450998,
+      "rgb_signal_reduction_percent": 28.63
+    },
+    {
+      "time": "1259",
+      "normal_rgb_sum": 12380696,
+      "aod_rgb_sum": 8974950,
+      "rgb_signal_reduction_percent": 27.51
+    },
+    {
+      "time": "1848",
+      "normal_rgb_sum": 12530382,
+      "aod_rgb_sum": 9061706,
+      "rgb_signal_reduction_percent": 27.68
+    },
+    {
+      "time": "2000",
+      "normal_rgb_sum": 13211175,
+      "aod_rgb_sum": 9537416,
+      "rgb_signal_reduction_percent": 27.81
+    },
+    {
+      "time": "2359",
+      "normal_rgb_sum": 13112513,
+      "aod_rgb_sum": 9485685,
+      "rgb_signal_reduction_percent": 27.66
+    }
+  ]
+}

@@ -2,8 +2,8 @@
 
 Untuk build ulang: `python tools/build_all.py`, lalu `python -m unittest discover -s tools -p "test_*.py"` setelah build berhasil.
 
-Implementasi dan validasi software selesai. BIN: `out/telu_university_v6.bin`, 427.877 byte. SHA-256 `2e53d4debc9531d17acafa9b1ff5d88111ba1c8641e7d9222b88d06e51e1cb96`.
-27 unit test lulus. Preview berasal dari ekstraksi BIN, normal dan AOD identik per piksel. `out/qa.json` adalah snapshot audit penyerahan; `out/validation.json` dihasilkan ulang saat build.
+Implementasi dan validasi software selesai. BIN: `out/telu_university_v6.bin`, 491755 byte, SHA-256 `04bd8391e07bcc9c7c9a5143a4241149e3b3cd6a2e21ba2db3ccf40c8bcbcc0d`.
+30 unit test lulus. Normal sama dengan rilis sebelumnya; AOD lebih redup dengan komponen dan posisi sama. `out/qa.json` adalah snapshot audit penyerahan; `out/validation.json` dihasilkan ulang saat build.
 
 Sumber visual: `V6-REF.png` dan `TELU_WATCHFACE_V6_DESIGN_SPEC.md` di root.
 Sumber teknis beserta commit ada di `findings.md`. Repository lama tidak diubah.
@@ -16,3 +16,5 @@ Detail tahapan ada di `task_plan.md`, checklist fisik di `docs/device-test.md`.
 Revisi proporsi digit 1: tinta 45 px dalam sel 61 px, tinggi 88 px. Preview normal/AOD dan stress sudah dibangun ulang; 27 test lulus.
 
 Revisi 14 September: digit menit #848688, sama dengan abu-abu muda pada simbol U logo. Build dan 27 test lulus.
+
+16 September: optimasi AOD selesai, lihat docs/aod-power.md dan out/aod-analysis.json. Penghematan baterai belum diukur. Paket pembanding ada di out/baseline/.

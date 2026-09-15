@@ -6,6 +6,7 @@ Adapted from the pinned V5 baseline; UIHH parameters and asset IDs retained.
 
 import json
 import math
+import copy
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -21,6 +22,16 @@ RED = (237, 30, 40)           # Telkom red utama (#ED1E28)
 WHITE = (255, 255, 255)
 WHITE_SOFT = (241, 241, 241)
 MINUTE_GRAY = (132, 134, 136)  # Light gray fill of the Tel-U U mark (#848688).
+AOD_HOUR_GAIN = 0.70
+AOD_MINUTE_GAIN = 0.85
+AOD_BACKGROUND_GAIN = 0.55
+
+
+def aod_dim(image, gain):
+    """Bake lower RGB drive into assets, preserving alpha and nonzero detail."""
+    lut = [0] + [max(1, round(value * gain)) for value in range(1, 256)]
+    r, g, b, alpha = image.convert("RGBA").split()
+    return Image.merge("RGBA", (r.point(lut), g.point(lut), b.point(lut), alpha))
 GRAY_LABEL = (154, 154, 156)
 GRAY_RING = (58, 58, 60)
 GRAY_RIM = (88, 88, 92)
@@ -553,7 +564,7 @@ def main():
     bg = build_background()
     bg.alpha_composite(logo_image(), (147, 13))
     save(bg, "background")
-    save(bg.copy(), "background AOD (identical)")
+    save(aod_dim(bg, AOD_BACKGROUND_GAIN), "background AOD dimmed")
     save(logo_image(), "logo (cadangan)")
 
     # AM / PM
@@ -732,12 +743,21 @@ def main():
     data_system[6]["NumberSequence"]["Text"]["Image"]["X"] = 306 - solar_w // 2
     data_system[6]["NumberSequence"]["Text"]["Image"]["Y"] = VALUE_SOLAR_CY - 2  # noqa: E501
 
-    # Always-on memakai seluruh layout normal, termasuk cuaca dan panel.
+    # Only the large time sprites need AOD copies. Metrics/date stay shared.
+    # Bake the transform now; firmware receives ordinary supported images.
+    idle_time = copy.deepcopy(time_digital)
+    for entry, source, gain in zip(idle_time["HoursMinutesSeconds"],
+                                    (I_TIME_H, I_TIME_M),
+                                    (AOD_HOUR_GAIN, AOD_MINUTE_GAIN)):
+        entry["Text"]["Image"]["ImageRange"]["ImageRange"]["ImageIndex"] = state["i"]
+        for digit in range(10):
+            with Image.open(OUT / f"{source + digit}.png") as image:
+                save(aod_dim(image, gain), f"AOD time {source} digit {digit}")
     idle = {
-        "Time": {"Digital": time_digital},
+        "Time": {"Digital": idle_time},
         "Date": date_system,
         "Data": data_system,
-        "BackgroundImageIndex": I_BG,
+        "BackgroundImageIndex": I_AOD,
     }
 
     preview_index = state["i"]

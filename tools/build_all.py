@@ -48,6 +48,7 @@ def main():
         run("tools/render_mockup.py", "build/verified_bin", f"out/stress/{time}.png", "--time", time, "--ampm", "none")
     shutil.copyfile(ROOT / "out/telu_trex_pro.bin", ROOT / "out/telu_university_v6.bin")
     run("tools/make_contact_sheet.py")
+    run("tools/aod_report.py")
     print("BUILD OK -> out/telu_university_v6.bin")
 
 

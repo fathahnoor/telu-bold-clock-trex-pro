@@ -14,7 +14,7 @@ Referensi visual adalah MD dan PNG pengguna di root. Penyesuaian dilakukan untuk
 | Panel kiri | Steps, BPM, kcal; tanpa CircleScale |
 | Panel kanan | Baterai, satu slot solar, cuaca |
 | Kampus | X 55, Y 287; 250 x 48, luminansi dibatasi 80/255 |
-| AOD | Seluruh parameter dan background sama dengan normal |
+| AOD | Komponen dan posisi sama; background dan digit waktu memakai versi redup |
 
 Angka Inter Black dipangkas ke tinta sebelum rasterisasi. Sel waktu tetap berukuran 61 x 88 piksel. Digit `1` mempertahankan proporsi alaminya dengan tinta selebar 45 piksel, terpusat di dalam sel dengan margin 8 piksel pada tiap sisi. Digit lain tetap memakai raster sebelumnya. Posisi sel tidak bergeser saat waktu berubah; lebar tinta pasangan dapat berbeda secara alami. Alpha menjadi mask warna solid untuk menjaga putih dan abu-abu dari perubahan RGB pada tepi antialias. Panel memakai kurva dari titik kontrol; teks dan ikon tetap terpisah dari garis panel.
 
@@ -34,9 +34,11 @@ Mode waktu mengikuti firmware. Preview dapat menampilkan AM/PM atau menghilangka
 - Validator collision menggabungkan semua varian digit, panjang nilai, suffix, no-data, bulan, hari, banner cuaca, dan solar. Alpha di atas 48 serta detail background di atas luminansi maksimum kanal 24 menjadi obstacle.
 - CircleScale dihilangkan dari data V6, sehingga gauge lama tidak mungkin muncul dari parameter binary.
 - Verifikasi binary memeriksa target perangkat, ukuran blok kompresi, indeks gambar, parameter, ukuran sprite, dan piksel round-trip.
-- Preview normal serta AOD harus identik per piksel.
+- Preview normal identik dengan rilis sebelum optimasi. AOD mempertahankan alpha, geometri, dan seluruh field, dengan RGB lebih rendah.
 - Uji tanggal mencakup 7 x 31 x 12 = 2.604 kombinasi untuk pemeriksaan lebar, termasuk kombinasi tanggal yang tidak ada di kalender nyata.
 - Nilai uji mencakup daftar spesifikasi, ditambah 99.999 langkah, 9.999 kcal, serta suhu -99 dan 99 derajat untuk batas representasi dua digit.
 - File input pengguna dipertahankan; preview tidak digunakan sebagai bukti uji fisik.
 
 `out/validation.json` menyimpan hasil binary. Jalankan unit test sesudah build berhasil. Jangan memakai hasil unit test dari BIN lama ketika build baru gagal.
+
+Optimasi AOD 16 September dijelaskan di [aod-power.md](aod-power.md).

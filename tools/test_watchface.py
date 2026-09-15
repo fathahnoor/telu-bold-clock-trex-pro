@@ -110,18 +110,26 @@ class WatchfaceV6Tests(unittest.TestCase):
 
     def test_idle_contains_the_complete_normal_layout(self):
         idle = self.named['IdleScreen']
-        self.assertEqual(idle['BackgroundImageIndex'],
+        self.assertNotEqual(idle['BackgroundImageIndex'],
                          self.named['Background']['ImageIndex'])
-        self.assertEqual(idle['Time'], self.named['Time'])
+        import copy
+        idle_time = copy.deepcopy(idle['Time'])
+        for original, aod in zip(self.named['Time']['Digital']['HoursMinutesSeconds'],
+                                 idle_time['Digital']['HoursMinutesSeconds']):
+            aod['Text']['Image']['ImageRange'] = original['Text']['Image']['ImageRange']
+        self.assertEqual(idle_time, self.named['Time'])
         self.assertEqual(idle['Date'], self.named['System']['Date'])
         self.assertEqual(idle['Data'], self.named['System']['Data'])
 
-    def test_idle_preview_matches_normal_pixel_for_pixel(self):
+    def test_idle_preview_preserves_content_with_lower_rgb(self):
         with Image.open(ROOT / 'out/preview.png') as normal:
             with Image.open(ROOT / 'out/preview_idle.png') as idle:
                 self.assertEqual(idle.size, normal.size)
-                self.assertEqual(idle.convert('RGBA').tobytes(),
-                                 normal.convert('RGBA').tobytes())
+                a = list(normal.convert('RGB').getdata())
+                b = list(idle.convert('RGB').getdata())
+                self.assertLess(sum(map(sum,b)),sum(map(sum,a))*0.85)
+                self.assertTrue(all(max(y) <= max(x) for x,y in zip(a,b)))
+                self.assertTrue(all(max(y)>0 for x,y in zip(a,b) if max(x)>10))
 
     def test_all_metrics_present_without_gauges(self):
         types = [e['Type'] for e in self.named['System']['Data']]
